@@ -1,6 +1,6 @@
 import { fetchFilteredData } from './api.js'
 
-let tempChart, tvocChart
+let tempChart, tvocChart, humidityChart
 
 function formatLabels(data) {
   return data.map(item => new Date(item.timestamp).toLocaleTimeString()).reverse()
@@ -16,6 +16,7 @@ export async function renderCharts() {
 
   const temps = formatValues(data, 'temperature')
   const tvoc = formatValues(data, 'tvoc')
+  const hum = formatValues(data, 'humidity')
 
   const tempCtx = document.getElementById('tempChart').getContext('2d')
   tempChart = new Chart(tempCtx, {
@@ -58,6 +59,27 @@ export async function renderCharts() {
       }
     }
   })
+
+    const humCtx = document.getElementById('humidityChart').getContext('2d')
+    humidityChart = new Chart(humCtx, {
+    type: 'line',
+    data: {
+        labels,
+        datasets: [{
+        label: 'Luftfuktighet (%)',
+        data: hum,
+        borderColor: 'orange',
+        fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+        x: { title: { display: true, text: 'Tid' } },
+        y: { title: { display: true, text: 'Luftfuktighet (%)' } }
+        }
+    }
+    })
 }
 
 export async function updateCharts() {
@@ -71,4 +93,8 @@ export async function updateCharts() {
   tvocChart.data.labels = labels
   tvocChart.data.datasets[0].data = formatValues(data, 'tvoc')
   tvocChart.update()
+
+  humidityChart.data.labels = labels
+  humidityChart.data.datasets[0].data = formatValues(data, 'humidity')
+  humidityChart.update()
 }

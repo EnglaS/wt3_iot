@@ -5,7 +5,7 @@ import mongoose from 'mongoose'
 mongoose.connect('mongodb://localhost:27017/iotdata', {
     useNewUrlParser: true,
     useUnifiedTopology: true
-  }).then(() => console.log('Connected to MongoDB'))
+}).then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err))
 
 const options = {
@@ -38,9 +38,9 @@ client.on('message', (topic, message) => {
         entry.save().then(() => {
             console.log('Data saved to MongoDB')
         })
-      } catch (err) {
+    } catch (err) {
         console.error('Failed to parse message as JSON:', err)
-      }
+    }
 })
 
 

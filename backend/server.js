@@ -22,19 +22,19 @@ mongoose.connect('mongodb://localhost:27017/iotdata', {
     .catch(err => console.error('MongoDB connection error:', err))
 
 app.get('/api/data', async (req, res) => {
-  try {
-    const { since } = req.query
-    const filter = since ? { timestamp: { $gte: new Date(since) } } : {}
+    try {
+        const { since } = req.query
+        const filter = since ? { timestamp: { $gte: new Date(since) } } : {}
 
-    const data = await SensorData.find(filter)
-      .sort({ timestamp: -1 })
-      .limit(10000)
-      .exec()
+        const data = await SensorData.find(filter)
+            .sort({ timestamp: -1 })
+            .limit(10000)
+            .exec()
 
-    res.json(data)
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch data' })
-  }
+        res.json(data)
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch data' })
+    }
 })
 
 app.listen(port, () => {
