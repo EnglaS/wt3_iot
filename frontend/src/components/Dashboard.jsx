@@ -8,9 +8,16 @@ const Dashboard = () => {
     const [minutes, setMinutes] = useState(10)
   
     useEffect(() => {
-      fetch(`/api/data?since=${new Date(Date.now() - minutes * 60000).toISOString()}`)
-        .then(res => res.json())
-        .then(setData)
+      const fetchData = () => {
+        fetch(`/api/data?since=${new Date(Date.now() - minutes * 60000).toISOString()}`)
+          .then(res => res.json())
+          .then(setData)
+      }
+    
+      fetchData() // Kör direkt första gången
+      const interval = setInterval(fetchData, 10000) // Kör varje 10:e sekund
+    
+      return () => clearInterval(interval) // Städa upp om komponenten tas bort
     }, [minutes])
   
     const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString())
