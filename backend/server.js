@@ -15,13 +15,13 @@ const port = 3000
 const publicPath = path.resolve(__dirname, '../public')
 app.use(express.static(publicPath))
 
-mongoose.connect('mongodb://localhost:27017/iotdata', {
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/iotdata', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err))
 
-app.get('/api/data', async (req, res) => {
+app.get('/iot-api/data', async (req, res) => {
     try {
         const { since } = req.query
         const filter = since ? { timestamp: { $gte: new Date(since) } } : {}
@@ -34,6 +34,15 @@ app.get('/api/data', async (req, res) => {
         res.json(data)
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch data' })
+    }
+})
+
+app.get('/iot-api/latest', async (req, res) => {
+    try {
+      const latest = await SensorData.findOne().sort({ timestamp: -1 }).exec()
+      res.json(latest)
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch latest data' })
     }
 })
 

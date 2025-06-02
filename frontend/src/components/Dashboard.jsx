@@ -3,13 +3,13 @@ import { Line } from 'react-chartjs-2'
 import 'chart.js/auto'
 
 
-const Dashboard = () => {
+const Dashboard = ({ focus }) => {
     const [data, setData] = useState([])
     const [minutes, setMinutes] = useState(10)
   
     useEffect(() => {
       const fetchData = () => {
-        fetch(`/api/data?since=${new Date(Date.now() - minutes * 60000).toISOString()}`)
+        fetch(`/iot-api/data?since=${new Date(Date.now() - minutes * 60000).toISOString()}`)
           .then(res => res.json())
           .then(setData)
       }
@@ -33,44 +33,50 @@ const Dashboard = () => {
           <button key={m} onClick={() => setMinutes(m)}>{m} min</button>
         ))}
   
-        <div className="chart-container">
-        <div className="current-value">Just nu: {latest.temperature?.toFixed(2)} °C</div>
+        {focus === 'temperature' && (
+          <div className="chart-container">
+            <div className="current-value">Just nu: {latest.temperature?.toFixed(2)} °C</div>
             <h2>Temperatur</h2>
             <Line data={{
-            labels,
-            datasets: [{
+              labels,
+              datasets: [{
                 label: 'Temperatur (°C)',
                 data: temps,
                 borderColor: 'blue'
-            }]
+              }]
             }} />
-        </div>
-        
-        <div className="chart-container">
+          </div>
+        )}
+  
+        {focus === 'tvoc' && (
+          <div className="chart-container">
             <div className="current-value">Just nu: {latest.tvoc} ppb</div>
             <h2>TVOC</h2>
             <Line data={{
-                labels,
-                datasets: [{
-                    label: 'TVOC (ppb)',
-                    data: tvoc,
-                    borderColor: 'green'
-                }]
+              labels,
+              datasets: [{
+                label: 'TVOC (ppb)',
+                data: tvoc,
+                borderColor: 'green'
+              }]
             }} />
-        </div>
-
-        <div className="chart-container">
-        <div className="current-value">Just nu: {latest.humidity?.toFixed(2)} %</div>
+          </div>
+        )}
+  
+        {focus === 'humidity' && (
+          <div className="chart-container">
+            <div className="current-value">Just nu: {latest.humidity?.toFixed(2)} %</div>
             <h2>Luftfuktighet</h2>
             <Line data={{
-            labels,
-            datasets: [{
+              labels,
+              datasets: [{
                 label: 'Luftfuktighet (%)',
                 data: hum,
                 borderColor: 'orange'
-            }]
+              }]
             }} />
-        </div>
+          </div>
+        )}
       </div>
     )
   }
